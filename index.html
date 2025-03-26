@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Express API Client</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+      }
+      .container {
+        background-color: #f5f5f5;
+        border-radius: 5px;
+        padding: 20px;
+        margin-top: 20px;
+      }
+      #message {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 4px;
+        min-height: 50px;
+      }
+      button {
+        background-color: #4caf50;
+        border: none;
+        color: white;
+        padding: 10px 15px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 10px 0;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      pre {
+        white-space: pre-wrap;
+      }
+      .loading {
+        opacity: 0.5;
+      }
+      .error {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Fingerprint Client</h1>
+    <p>
+      This page makes a request to your Fingerprint to collect data running on
+      localhost:8000
+    </p>
+
+    <button id="fetchButton">Health Check</button>
+
+    <div class="container">
+      <h2>Response:</h2>
+      <div id="message">
+        <p>Click the button above to get data from the API.</p>
+      </div>
+    </div>
+
+    <script>
+      const url = "http://localhost:8000";
+      document.addEventListener("DOMContentLoaded", function () {
+        const messageContainer = document.getElementById("message");
+        const fetchButton = document.getElementById("fetchButton");
+        async function fetchMessage() {
+          messageContainer.classList.add("loading");
+          messageContainer.innerHTML = "Loading...";
+          try {
+            const response = await fetch(url);
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json();
+            messageContainer.innerHTML = `
+                        <h3>Success!</h3>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+          } catch (error) {
+            messageContainer.innerHTML = `
+                        <p class="error">Error fetching data from the API:</p>
+                        <p class="error">${error.message}</p>
+                        <p>Make sure your Express server is running on localhost:8000</p>
+                    `;
+          } finally {
+            messageContainer.classList.remove("loading");
+          }
+        }
+        fetchButton.addEventListener("click", fetchMessage);
+      });
+    </script>
+  </body>
+</html>
